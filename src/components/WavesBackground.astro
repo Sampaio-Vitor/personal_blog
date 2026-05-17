@@ -19,17 +19,13 @@ const { mode = 'animated' } = Astro.props;
     pointer-events: none;
     background: var(--background);
   }
-  /* Hide on small screens — the IDE window fills the viewport, waves invisible anyway. */
-  @media (max-width: 767px) {
-    #waves-bg { display: none; }
-  }
 </style>
 
 <script>
   import { initWaves } from '../scripts/waves';
 
   const canvas = document.getElementById('waves-bg') as HTMLCanvasElement | null;
-  if (canvas && window.matchMedia('(min-width: 768px)').matches) {
+  if (canvas) {
     const mode = (canvas.dataset.mode as 'animated' | 'static') ?? 'animated';
     const run = () => initWaves(canvas, mode);
     if ('requestIdleCallback' in window) {
