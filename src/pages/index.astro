@@ -11,30 +11,32 @@ from pydantic import BaseModel, EmailStr, HttpUrl, Field
 
 
 class Role(StrEnum):
-    ML_ENGINEER = "machine learning engineer"
-    SOFTWARE_ENGINEER = "software engineer"
+    SENIOR_ML_ENGINEER = "senior machine learning engineer"
+    SENIOR_DATA_SCIENTIST = "senior data scientist"
+    PYTHON_BACKEND_ENGINEER = "python backend engineer"
 
 
 class Focus(StrEnum):
-    TRAINING = "training"
-    SERVING = "serving"
-    EVALS = "evals"
-    DATA_PLUMBING = "data plumbing"
-    OBSERVABILITY = "observability"
+    PREDICTIVE_MODELING = "predictive modeling"
+    NLP = "nlp"
+    RAG_SYSTEMS = "rag systems"
+    MLOPS = "mlops"
+    DATA_PIPELINES = "automated data pipelines"
+    LOW_LATENCY_BACKENDS = "low-latency backends"
 
 
 class Stack(BaseModel):
     """The tools I reach for first, not an exhaustive list."""
 
     language: str = "python"
-    runtime: list[str] = Field(default_factory=lambda: ["pytorch", "fastapi", "duckdb"])
-    infra: list[str] = Field(default_factory=lambda: ["docker", "aws", "github actions"])
-    agents: list[str] = Field(
+    runtime: list[str] = Field(default_factory=lambda: ["xgboost", "pytorch", "fastapi", "langchain", "transformers"])
+    infra: list[str] = Field(default_factory=lambda: ["docker", "aws", "azure", "ec2", "s3", "redis", "kafka"])
+    specialties: list[str] = Field(
         default_factory=lambda: [
-            "litellm",                      # one API, many providers
-            "mcp",                          # tool servers (consumer for now)
-            "tool-use loops",               # the boring core of any agent
-            "claude code",                  # daily driver
+            "supervised & unsupervised learning",
+            "text analytics",
+            "retrieval + reranking pipelines",
+            "scalable ml systems",
         ]
     )
 
@@ -52,18 +54,19 @@ class Person(BaseModel):
 
 
 me = Person(
-    name="Vitor Sampaio",
+    name="Vitor Carvalho Sampaio",
     handle="vitor_sampaio",
-    roles=[Role.ML_ENGINEER, Role.SOFTWARE_ENGINEER],
+    roles=[Role.SENIOR_ML_ENGINEER, Role.SENIOR_DATA_SCIENTIST, Role.PYTHON_BACKEND_ENGINEER],
     focus=[
-        Focus.TRAINING,
-        Focus.SERVING,
-        Focus.EVALS,
-        Focus.OBSERVABILITY,
+        Focus.PREDICTIVE_MODELING,
+        Focus.NLP,
+        Focus.RAG_SYSTEMS,
+        Focus.MLOPS,
+        Focus.DATA_PIPELINES,
     ],
     stack=Stack(),
-    location="Brazil",
-    email="hello@vitorsampa.io",
+    location="Belo Horizonte, Brazil",
+    email="vitorsampaiomle@gmail.com",
     website="https://vitorsampa.io",
     currently_reading=None,
 )
@@ -83,28 +86,184 @@ codeHtml = codeHtml.replace('<pre ', '<pre data-filename="about.py" ');
 
 <Layout title="about" description="Vitor Sampaio — machine learning engineer & software engineer.">
   <SiteShell active="about">
-    <div class="about-code-full" set:html={codeHtml} />
+    <!-- Toggle button -->
+    <div id="view-toggle" class="mb-6">
+      <button
+        id="btn-recruiter"
+        type="button"
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-bold uppercase tracking-wider font-mono transition-all border-2 border-foreground shadow-brutal bg-accent text-foreground-inverse hover:bg-accent-hover hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] h-10 px-5"
+      >
+        Are you a recruiter? 👋 Click here
+      </button>
+      <button
+        id="btn-nerd"
+        type="button"
+        class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-bold uppercase tracking-wider font-mono transition-all border-2 border-foreground shadow-brutal bg-foreground text-background hover:bg-accent hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] h-10 px-5"
+      >
+        &lt;/&gt; Back to code
+      </button>
+    </div>
+
+    <!-- Code view (default) -->
+    <div id="view-code" class="about-code-full" set:html={codeHtml} />
+
+    <!-- Recruiter-friendly view -->
+    <div id="view-recruiter" class="recruiter-view is-hidden">
+      <div class="recruiter-card border-2 border-foreground bg-surface shadow-brutal p-6 md:p-8 mb-6">
+        <h2 class="font-serif italic text-3xl md:text-4xl text-foreground mb-1">Vitor Carvalho Sampaio</h2>
+        <p class="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-4">Senior ML Engineer · Senior Data Scientist · Python Backend Engineer</p>
+        <p class="font-sans text-sm leading-relaxed text-foreground-muted mb-4">
+          I design and deploy scalable machine-learning systems and backend services, with strong experience in predictive modeling, NLP, and automated data pipelines.
+        </p>
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="inline-flex items-center font-mono text-xs uppercase tracking-wider px-3 py-1 border-2 border-foreground bg-accent text-foreground-inverse font-bold">Belo Horizonte, Brazil 🇧🇷</span>
+          <span class="inline-flex items-center font-mono text-xs uppercase tracking-wider px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Open to remote</span>
+        </div>
+      </div>
+
+      <!-- What I do -->
+      <div class="recruiter-card border-2 border-foreground bg-surface shadow-brutal p-6 md:p-8 mb-6">
+        <h3 class="font-serif italic text-xl md:text-2xl text-foreground mb-4">What I do</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="border-2 border-foreground bg-surface-alt p-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent font-bold mb-1">Predictive modeling</p>
+            <p class="font-sans text-sm text-foreground">Building production-ready supervised and unsupervised ML models</p>
+          </div>
+          <div class="border-2 border-foreground bg-surface-alt p-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent font-bold mb-1">NLP systems</p>
+            <p class="font-sans text-sm text-foreground">Developing text analytics, entity extraction, and retrieval-based AI workflows</p>
+          </div>
+          <div class="border-2 border-foreground bg-surface-alt p-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent font-bold mb-1">MLOps</p>
+            <p class="font-sans text-sm text-foreground">Deploying, monitoring, and maintaining ML services and batch pipelines</p>
+          </div>
+          <div class="border-2 border-foreground bg-surface-alt p-4">
+            <p class="font-mono text-xs uppercase tracking-wider text-accent font-bold mb-1">Backend engineering</p>
+            <p class="font-sans text-sm text-foreground">Building reliable low-latency Python APIs and distributed data workflows</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech stack -->
+      <div class="recruiter-card border-2 border-foreground bg-surface shadow-brutal p-6 md:p-8 mb-6">
+        <h3 class="font-serif italic text-xl md:text-2xl text-foreground mb-4">Tech stack</h3>
+        <div class="space-y-4">
+          <div>
+            <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">Languages &amp; Frameworks</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-foreground text-background font-bold">Python</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">FastAPI</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">PyTorch</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">XGBoost</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">LangChain</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Transformers</span>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">Cloud &amp; Infra</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Docker</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">AWS</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Azure</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">EC2</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">S3</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Redis</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Kafka</span>
+            </div>
+          </div>
+          <div>
+            <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">Specialties</p>
+            <div class="flex flex-wrap gap-2">
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Text analytics</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">RAG pipelines</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Model serving</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Evaluation loops</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Get in touch -->
+      <div class="recruiter-card border-2 border-foreground bg-accent shadow-brutal p-6 md:p-8">
+        <h3 class="font-serif italic text-xl md:text-2xl text-foreground-inverse mb-2">Let's talk</h3>
+        <p class="font-sans text-sm text-foreground-inverse mb-4">
+          I'm always open to interesting conversations about ML, engineering, or opportunities.
+        </p>
+        <a
+          href="mailto:hello@vitorsampa.io"
+          class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-bold uppercase tracking-wider font-mono transition-all border-2 border-foreground-inverse shadow-brutal bg-foreground-inverse text-accent hover:bg-background hover:text-foreground hover:border-foreground hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm active:translate-x-[2px] active:translate-y-[2px] h-10 px-5"
+        >
+          ✉️ vitorsampaiomle@gmail.com
+        </a>
+      </div>
+    </div>
   </SiteShell>
 </Layout>
 
 <style>
   .about-code-full {
     min-height: 100%;
-    margin: -1.5rem;
-    display: flex;
-  }
-
-  @media (min-width: 768px) {
-    .about-code-full {
-      margin: -2.5rem;
-    }
   }
 
   .about-code-full :global(pre) {
     margin: 0;
     width: 100%;
-    flex: 1;
-    min-height: 100%;
     box-sizing: border-box;
   }
+
+  /* Ensure toggling always wins over component display rules */
+  .is-hidden {
+    display: none !important;
+  }
+
+  /* Recruiter view entrance animation */
+  .recruiter-view {
+    animation: fadeIn 0.25s ease-out;
+  }
+
+  .recruiter-card {
+    transition: transform 0.15s ease;
+  }
+
+  .recruiter-card:hover {
+    transform: translate(-1px, -1px);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 </style>
+
+<script>
+  const viewToggle = document.getElementById('view-toggle')!;
+  const btnRecruiter = document.getElementById('btn-recruiter')!;
+  const btnNerd = document.getElementById('btn-nerd')!;
+  const viewCode = document.getElementById('view-code')!;
+  const viewRecruiter = document.getElementById('view-recruiter')!;
+
+  // Start: code view shown, recruiter hidden, toggle shows recruiter button
+  btnNerd.style.display = 'none';
+
+  btnRecruiter.addEventListener('click', () => {
+    viewCode.classList.add('is-hidden');
+    viewRecruiter.classList.remove('is-hidden');
+    btnRecruiter.style.display = 'none';
+    btnNerd.style.display = '';
+    // Re-trigger animation
+    viewRecruiter.style.animation = 'none';
+    viewRecruiter.offsetHeight; // force reflow
+    viewRecruiter.style.animation = '';
+  });
+
+  btnNerd.addEventListener('click', () => {
+    viewRecruiter.classList.add('is-hidden');
+    viewCode.classList.remove('is-hidden');
+    btnNerd.style.display = 'none';
+    btnRecruiter.style.display = '';
+    // Re-trigger animation on code view
+    viewCode.style.animation = 'none';
+    viewCode.offsetHeight;
+    viewCode.style.animation = '';
+  });
+</script>
