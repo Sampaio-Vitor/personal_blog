@@ -68,36 +68,51 @@ const fullTitle = title === 'vitorsampa.io' ? title : `${title} — vitorsampa.i
     <button
       id="peek-waves-btn"
       type="button"
-      class="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 font-mono text-[11px] tracking-wide px-3 py-1.5 border-2 border-foreground bg-surface text-foreground shadow-brutal-sm hover:bg-accent hover:text-foreground-inverse"
+      class="fixed bottom-4 left-1/2 -translate-x-1/2 z-20 font-mono text-[11px] tracking-wide text-center max-w-[calc(100vw-2rem)] px-3 py-1.5 border-2 border-foreground bg-surface text-foreground shadow-brutal-sm hover:bg-accent hover:text-foreground-inverse"
     >
-      bonito o fundo né? Clique aqui para ver só ele
+      Nice background huh? Click here to fetch.
     </button>
 
     <style is:global>
       main { transition: opacity 0.6s ease; }
-      #peek-waves-btn { transition: opacity 0.5s ease, background-color 0.15s ease, color 0.15s ease; }
-      body.peek-waves main,
-      body.peek-waves #peek-waves-btn { opacity: 0; pointer-events: none; }
+      #peek-waves-btn { transition: background-color 0.15s ease, color 0.15s ease; }
+      body.peek-waves main { opacity: 0; pointer-events: none; }
     </style>
 
     <script>
       const btn = document.getElementById('peek-waves-btn');
-      let timer: ReturnType<typeof setTimeout> | undefined;
+      const DURATION = 20;
+      let interval: ReturnType<typeof setInterval> | undefined;
+      let idleText = '';
 
       function restore() {
         document.body.classList.remove('peek-waves');
-        if (timer) { clearTimeout(timer); timer = undefined; }
+        if (interval) { clearInterval(interval); interval = undefined; }
         window.removeEventListener('click', restore);
+        if (btn) btn.textContent = idleText;
       }
 
       function reveal() {
+        if (!btn) return;
+        idleText = btn.textContent ?? '';
         document.body.classList.add('peek-waves');
-        timer = setTimeout(restore, 20000);
+
+        let left = DURATION;
+        btn.textContent = `back in ${left}s — click to return`;
+        interval = setInterval(() => {
+          left -= 1;
+          if (left <= 0) { restore(); return; }
+          btn.textContent = `back in ${left}s — click to return`;
+        }, 1000);
+
         // defer so the click that triggered reveal doesn't immediately restore
         setTimeout(() => window.addEventListener('click', restore, { once: true }), 0);
       }
 
-      btn?.addEventListener('click', reveal);
+      btn?.addEventListener('click', () => {
+        if (document.body.classList.contains('peek-waves')) restore();
+        else reveal();
+      });
     </script>
   </body>
 </html>
