@@ -83,23 +83,28 @@ codeHtml = codeHtml.replace('<pre ', '<pre data-filename="about.py" ');
 
 <Layout title="about" description="Vitor Sampaio — machine learning engineer & software engineer.">
   <SiteShell active="about">
-    <header class="mb-8">
-      <h1 class="font-display font-extrabold text-5xl tracking-tight mb-2">about.py</h1>
-      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
-        // I work mostly in python, so this page is one. Run it.
-      </p>
-    </header>
-
-    <div set:html={codeHtml} />
-
-    <section class="mt-12 pt-8 border-t-2 border-foreground">
-      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-3">
-        $ python about.py
-      </p>
-      <p class="font-sans text-base text-foreground">
-        Notes on the work live under <a href="/blog" class="text-accent hover:underline">blog.md</a>.
-        Things I've built sit under <a href="/projects" class="text-accent hover:underline">projects.md</a>.
-      </p>
-    </section>
+    <div class="about-code-full" set:html={codeHtml} />
   </SiteShell>
 </Layout>
+
+<style>
+  .about-code-full {
+    min-height: 100%;
+    margin: -1.5rem;
+    display: flex;
+  }
+
+  @media (min-width: 768px) {
+    .about-code-full {
+      margin: -2.5rem;
+    }
+  }
+
+  .about-code-full :global(pre) {
+    margin: 0;
+    width: 100%;
+    flex: 1;
+    min-height: 100%;
+    box-sizing: border-box;
+  }
+</style>
