@@ -1,0 +1,190 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SiteShell from '../../components/SiteShell.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Layout title={post.data.title} description={post.data.description}>
+  <SiteShell active="blog">
+    <div class="flex items-start justify-between not-prose mb-4 gap-4">
+      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
+        {fmt(post.data.date)}
+      </p>
+      <button
+        id="expand-btn"
+        class="font-mono text-xs uppercase tracking-wider border-2 border-foreground bg-surface px-3 py-1.5 shadow-brutal-sm hover:bg-accent hover:text-foreground-inverse hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center gap-1.5 shrink-0"
+        aria-label="Expand post into reader view"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
+        expand
+      </button>
+    </div>
+
+    <article class="font-sans prose prose-lg max-w-none
+                    prose-headings:font-serif prose-headings:italic
+                    prose-h1:text-5xl prose-h2:text-3xl
+                    prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+                    prose-strong:text-foreground prose-code:font-mono
+                    prose-blockquote:border-l-4 prose-blockquote:border-accent
+                    prose-blockquote:bg-surface-alt prose-blockquote:not-italic"
+      id="post-content">
+      <h1>{post.data.title}</h1>
+      <Content />
+    </article>
+
+    {post.data.tags.length > 0 && (
+      <ul class="flex flex-wrap gap-2 mt-10 not-prose">
+        {post.data.tags.map((t) => (
+          <li>
+            <a
+              href={`/blog/tag/${t}`}
+              class="inline-block font-mono text-xs uppercase tracking-wider border-2 border-foreground bg-surface px-3 py-1 shadow-brutal-sm hover:bg-accent hover:text-foreground-inverse hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+            >#{t}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <p class="mt-12 font-mono text-xs">
+      <a href="/blog" class="text-foreground-muted hover:text-accent">← back to blog.md</a>
+    </p>
+  </SiteShell>
+
+  <!-- Reader-mode dialog -->
+  <dialog id="reader-dialog" class="reader-dialog">
+    <div class="reader-dialog__scroll">
+      <header class="reader-dialog__header">
+        <span class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
+          {fmt(post.data.date)}
+        </span>
+        <button
+          id="close-dialog-btn"
+          class="font-mono text-xs uppercase tracking-wider border-2 border-foreground bg-surface px-3 py-1.5 shadow-brutal-sm hover:bg-accent hover:text-foreground-inverse hover:translate-x-[1px] hover:translate-y-[1px] transition-all flex items-center gap-1.5"
+          aria-label="Close reader view"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
+          collapse
+        </button>
+      </header>
+      <div class="reader-dialog__inner">
+        <article class="font-sans prose prose-lg max-w-none
+                        prose-headings:font-serif prose-headings:italic
+                        prose-h1:text-5xl prose-h2:text-3xl
+                        prose-a:text-accent prose-a:no-underline hover:prose-a:underline
+                        prose-strong:text-foreground prose-code:font-mono
+                        prose-blockquote:border-l-4 prose-blockquote:border-accent
+                        prose-blockquote:bg-surface-alt prose-blockquote:not-italic"
+          id="reader-content">
+          <h1>{post.data.title}</h1>
+          <!-- Content will be cloned here by script -->
+        </article>
+        {post.data.tags.length > 0 && (
+          <ul class="flex flex-wrap gap-2 mt-10 not-prose">
+            {post.data.tags.map((t) => (
+              <li>
+                <span class="inline-block font-mono text-xs uppercase tracking-wider border-2 border-foreground bg-surface px-3 py-1 shadow-brutal-sm">
+                  #{t}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  </dialog>
+</Layout>
+
+<style>
+  .reader-dialog {
+    width: 75vw;
+    max-height: 88vh;
+    padding: 0;
+    margin: auto;
+    border: 2px solid var(--foreground);
+    background: var(--surface);
+    color: var(--foreground);
+    overflow: hidden;
+    box-shadow: 6px 6px 0 0 var(--shadow-color);
+    animation: reader-pop-in 0.2s ease-out;
+  }
+  .reader-dialog::backdrop {
+    background: rgba(26, 26, 26, 0.5);
+    backdrop-filter: blur(2px);
+  }
+  .reader-dialog__scroll {
+    overflow-y: auto;
+    padding: 2rem 2.5rem 3rem;
+    max-height: 88vh;
+  }
+  .reader-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--foreground);
+  }
+  .reader-dialog__inner {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  @keyframes reader-pop-in {
+    from { opacity: 0; transform: scale(0.97) translateY(12px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+</style>
+
+<script>
+  const expandBtn = document.getElementById('expand-btn');
+  const closeBtn = document.getElementById('close-dialog-btn');
+  const dialog = document.getElementById('reader-dialog') as HTMLDialogElement;
+  const sourceContent = document.getElementById('post-content');
+  const readerContent = document.getElementById('reader-content');
+
+  if (expandBtn && dialog && sourceContent && readerContent) {
+    expandBtn.addEventListener('click', () => {
+      // Clone the post body into the reader
+      const body = sourceContent.querySelector('.prose') ?? sourceContent;
+      readerContent.innerHTML = '';
+      // Copy the h1
+      const h1 = sourceContent.querySelector('h1');
+      if (h1) readerContent.appendChild(h1.cloneNode(true));
+      // Copy everything after the h1
+      const siblings = Array.from(sourceContent.children).slice(
+        sourceContent.children.length > 0 ? 1 : 0
+      );
+      siblings.forEach((el) => readerContent.appendChild(el.cloneNode(true)));
+      dialog.showModal();
+      document.body.style.overflow = 'hidden';
+    });
+  }
+
+  function closeDialog() {
+    if (!dialog) return;
+    dialog.close();
+    document.body.style.overflow = '';
+  }
+
+  closeBtn?.addEventListener('click', closeDialog);
+  dialog?.addEventListener('close', () => {
+    document.body.style.overflow = '';
+  });
+
+  // Close on Escape (dialog handles this natively, but also close on backdrop click)
+  dialog?.addEventListener('click', (e) => {
+    if (e.target === dialog) closeDialog();
+  });
+</script>
