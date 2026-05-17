@@ -1,0 +1,43 @@
+---
+import Profile from './Profile.astro';
+import Contact from './Contact.astro';
+
+interface Props {
+  active: 'about' | 'projects' | 'blog';
+}
+
+const { active } = Astro.props;
+
+const tabs = [
+  { id: 'about',    label: 'about.py',    href: '/' },
+  { id: 'projects', label: 'projects.md', href: '/projects' },
+  { id: 'blog',     label: 'blog.md',     href: '/blog' },
+] as const;
+---
+
+<main class="min-h-screen p-4 md:p-8">
+  <div class="max-w-7xl mx-auto border-2 border-foreground bg-surface shadow-brutal-lg flex flex-col md:flex-row">
+    <!-- Left pane -->
+    <aside class="md:w-1/4 border-b-2 md:border-b-0 md:border-r-2 border-foreground flex flex-col">
+      <Profile />
+      <Contact />
+    </aside>
+
+    <!-- Right pane -->
+    <section class="md:w-3/4 flex flex-col h-[80vh] sm:h-[85vh] md:h-[90vh]">
+      <nav class="flex bg-background border-b-2 border-foreground sticky top-0 z-10 overflow-x-auto">
+        {tabs.map((t) => {
+          const isActive = t.id === active;
+          const base = 'font-mono uppercase tracking-wider text-xs px-4 py-3 border-r-2 border-foreground whitespace-nowrap transition-colors';
+          const cls = isActive
+            ? `${base} bg-accent text-foreground-inverse`
+            : `${base} hover:bg-surface-alt text-foreground`;
+          return <a href={t.href} class={cls}>{t.label}</a>;
+        })}
+      </nav>
+      <div class="flex-1 overflow-y-scroll p-6 md:p-10">
+        <slot />
+      </div>
+    </section>
+  </div>
+</main>

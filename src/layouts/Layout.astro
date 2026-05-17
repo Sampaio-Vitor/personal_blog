@@ -1,0 +1,64 @@
+---
+import '../styles/global.scss';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+}
+
+const {
+  title = 'vitorsampa.io',
+  description = 'Vitor Sampaio — machine learning engineer & software engineer. Notes, projects, and writing.',
+  canonical,
+  ogImage = '/og-default.png',
+} = Astro.props;
+
+const siteUrl = 'https://vitorsampa.io';
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, siteUrl).toString();
+const fullTitle = title === 'vitorsampa.io' ? title : `${title} — vitorsampa.io`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="vitorsampa.io" href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="vitorsampa.io" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={new URL(ogImage, siteUrl).toString()} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, siteUrl).toString()} />
+
+    <meta name="DC.title" content={fullTitle} />
+    <meta name="DC.creator" content="Vitor Sampaio" />
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: 'Vitor Sampaio',
+      url: siteUrl,
+      jobTitle: 'Machine Learning Engineer & Software Engineer',
+    })} />
+
+  </head>
+  <body class="bg-background text-foreground font-mono min-h-screen">
+    <slot />
+  </body>
+</html>
