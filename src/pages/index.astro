@@ -1,0 +1,105 @@
+---
+import { codeToHtml } from 'shiki';
+import Layout from '../layouts/Layout.astro';
+import SiteShell from '../components/SiteShell.astro';
+
+const source = `"""about.py — who I am, as a typed object."""
+
+from enum import StrEnum
+
+from pydantic import BaseModel, EmailStr, HttpUrl, Field
+
+
+class Role(StrEnum):
+    ML_ENGINEER = "machine learning engineer"
+    SOFTWARE_ENGINEER = "software engineer"
+
+
+class Focus(StrEnum):
+    TRAINING = "training"
+    SERVING = "serving"
+    EVALS = "evals"
+    DATA_PLUMBING = "data plumbing"
+    OBSERVABILITY = "observability"
+
+
+class Stack(BaseModel):
+    """The tools I reach for first, not an exhaustive list."""
+
+    language: str = "python"
+    runtime: list[str] = Field(default_factory=lambda: ["pytorch", "fastapi", "duckdb"])
+    infra: list[str] = Field(default_factory=lambda: ["docker", "aws", "github actions"])
+    agents: list[str] = Field(
+        default_factory=lambda: [
+            "litellm",                      # one API, many providers
+            "mcp",                          # tool servers (consumer for now)
+            "tool-use loops",               # the boring core of any agent
+            "claude code",                  # daily driver
+        ]
+    )
+
+
+class Person(BaseModel):
+    name: str
+    handle: str
+    roles: list[Role]
+    focus: list[Focus]
+    stack: Stack
+    location: str
+    email: EmailStr
+    website: HttpUrl
+    currently_reading: str | None = None
+
+
+me = Person(
+    name="Vitor Sampaio",
+    handle="vitor_sampaio",
+    roles=[Role.ML_ENGINEER, Role.SOFTWARE_ENGINEER],
+    focus=[
+        Focus.TRAINING,
+        Focus.SERVING,
+        Focus.EVALS,
+        Focus.OBSERVABILITY,
+    ],
+    stack=Stack(),
+    location="Brazil",
+    email="hello@vitorsampa.io",
+    website="https://vitorsampa.io",
+    currently_reading=None,
+)
+
+
+if __name__ == "__main__":
+    print(me.model_dump_json(indent=2))
+`;
+
+let codeHtml = await codeToHtml(source, {
+  lang: 'python',
+  theme: 'vitesse-dark',
+});
+// Add the filename header bar via the same data-filename hook our SCSS uses.
+codeHtml = codeHtml.replace('<pre ', '<pre data-filename="about.py" ');
+---
+
+<Layout title="about" description="Vitor Sampaio — machine learning engineer & software engineer.">
+  <SiteShell active="about">
+    <header class="mb-8">
+      <h1 class="font-display font-extrabold text-5xl tracking-tight mb-2">about.py</h1>
+      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
+        // I work mostly in python, so this page is one. Run it.
+      </p>
+    </header>
+
+    <div set:html={codeHtml} />
+
+    <section class="mt-12 pt-8 border-t-2 border-foreground">
+      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-3">
+        $ python about.py
+      </p>
+      <p class="font-sans text-base text-foreground">
+        Notes on the work live under <a href="/blog" class="text-accent hover:underline">blog.md</a>.
+        Things I've built sit under <a href="/projects" class="text-accent hover:underline">projects.md</a>.
+      </p>
+    </section>
+  </SiteShell>
+</Layout>
