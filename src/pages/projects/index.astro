@@ -1,0 +1,32 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import SiteShell from '../../components/SiteShell.astro';
+import { projects } from '../../data/projects';
+---
+
+<Layout title="projects" description="Things Vitor has built.">
+  <SiteShell active="projects">
+    <header class="mb-10">
+      <h1 class="font-serif italic text-5xl mb-2">projects</h1>
+      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
+        // {projects.length} project{projects.length === 1 ? '' : 's'}
+      </p>
+    </header>
+
+    <ul class="space-y-6">
+      {projects.map((p) => (
+        <li class="border-2 border-foreground bg-surface shadow-brutal p-5">
+          <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">
+            {p.year} · {p.tags.map((t) => `#${t}`).join(' ')}
+          </p>
+          <h2 class="font-serif italic text-3xl mb-2">
+            {p.href ? (
+              <a href={p.href} class="hover:text-accent">{p.name}</a>
+            ) : p.name}
+          </h2>
+          <p class="font-sans text-base text-foreground-muted">{p.description}</p>
+        </li>
+      ))}
+    </ul>
+  </SiteShell>
+</Layout>
