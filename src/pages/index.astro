@@ -29,8 +29,8 @@ class Stack(BaseModel):
     """The tools I reach for first, not an exhaustive list."""
 
     language: str = "python"
-    runtime: list[str] = Field(default_factory=lambda: ["xgboost", "pytorch", "fastapi", "langchain", "transformers"])
-    infra: list[str] = Field(default_factory=lambda: ["docker", "aws", "azure", "ec2", "s3", "redis", "kafka"])
+    runtime: list[str] = Field(default_factory=lambda: ["xgboost", "fastapi", "langchain", "transformers"])
+    infra: list[str] = Field(default_factory=lambda: ["docker", "aws", "azure", "ec2", "s3", "redis"])
     specialties: list[str] = Field(
         default_factory=lambda: [
             "supervised & unsupervised learning",
@@ -65,7 +65,7 @@ me = Person(
         Focus.DATA_PIPELINES,
     ],
     stack=Stack(),
-    location="Belo Horizonte, Brazil",
+    location="Brazil",
     email="vitorsampaiomle@gmail.com",
     website="https://vitorsampa.io",
     currently_reading=None,
@@ -168,7 +168,7 @@ codeHtml = codeHtml.replace('<pre ', '<pre data-filename="about.py" ');
               <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">EC2</span>
               <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">S3</span>
               <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Redis</span>
-              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">Kafka</span>
+              <span class="font-mono text-xs px-3 py-1 border-2 border-foreground bg-surface-alt text-foreground font-bold">AI Agents</span>
             </div>
           </div>
           <div>
