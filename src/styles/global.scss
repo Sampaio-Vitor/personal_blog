@@ -47,10 +47,14 @@
 /* Sharp corners everywhere */
 * { border-radius: 0 !important; }
 
+html {
+  background: var(--background);
+}
+
 body {
   font-family: 'Geist Mono', ui-monospace, monospace;
   -webkit-font-smoothing: antialiased;
-  background: var(--background);
+  background: transparent;
   color: var(--foreground);
 }
 

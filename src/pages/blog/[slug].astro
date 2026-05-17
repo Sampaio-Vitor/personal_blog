@@ -17,7 +17,7 @@ const { Content } = await post.render();
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
 ---
 
-<Layout title={post.data.title} description={post.data.description}>
+<Layout title={post.data.title} description={post.data.description} wavesMode="static">
   <SiteShell active="blog">
     <div class="flex items-start justify-between not-prose mb-4 gap-4">
       <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
