@@ -1,0 +1,140 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SiteShell from '../../components/SiteShell.astro';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const allTags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Layout title="blog" description="Writing from Vitor Sampaio.">
+  <SiteShell active="blog">
+    <header class="mb-10">
+      <h1 class="font-serif italic text-5xl mb-2">blog</h1>
+      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
+        // {posts.length} post{posts.length === 1 ? '' : 's'}
+      </p>
+    </header>
+
+    {/* Tag filter bar */}
+    {allTags.length > 0 && (
+      <section class="mb-10 pb-6 border-b-2 border-foreground" id="tag-filter">
+        <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-3">
+          // filter by tag
+        </p>
+        <ul class="flex flex-wrap gap-2">
+          {allTags.map((t) => (
+            <li>
+              <button
+                data-tag={t}
+                class="tag-btn inline-block font-mono text-xs uppercase tracking-wider border-2 border-foreground bg-surface px-3 py-1 shadow-brutal-sm hover:bg-accent hover:text-foreground-inverse hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+              >
+                #{t}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <ul class="space-y-6" id="posts-list">
+      {posts.map((post) => (
+        <li
+          class="border-2 border-foreground bg-surface shadow-brutal p-5 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all"
+          data-tags={post.data.tags.join(',')}
+        >
+          <a href={`/blog/${post.slug}`} class="block">
+            <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">
+              {fmt(post.data.date)}
+            </p>
+            <h2 class="font-serif italic text-3xl mb-2 hover:text-accent">{post.data.title}</h2>
+            {post.data.description && (
+              <p class="font-sans text-base text-foreground-muted mb-3">{post.data.description}</p>
+            )}
+          </a>
+          {post.data.tags.length > 0 && (
+            <ul class="flex flex-wrap gap-2 mt-3">
+              {post.data.tags.map((t) => (
+                <li>
+                  <a
+                    href={`/blog/tag/${t}`}
+                    class="font-mono text-xs text-foreground-muted hover:text-accent"
+                  >#{t}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
+
+    {/* Empty state when filter has no matches */}
+    <p class="hidden font-mono text-sm text-foreground-muted py-10 text-center" id="no-results">
+      // no posts match this tag
+    </p>
+  </SiteShell>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.tag-btn');
+  const posts = document.querySelectorAll<HTMLLIElement>('#posts-list > li');
+  const noResults = document.getElementById('no-results');
+  let activeTag: string | null = null;
+
+  function applyFilter(tag: string | null) {
+    activeTag = tag;
+
+    // Toggle active state on buttons
+    buttons.forEach((btn) => {
+      if (btn.dataset.tag === tag) {
+        btn.classList.add('bg-accent', 'text-foreground-inverse');
+        btn.classList.remove('bg-surface');
+      } else {
+        btn.classList.remove('bg-accent', 'text-foreground-inverse');
+        btn.classList.add('bg-surface');
+      }
+    });
+
+    // Filter posts
+    let visibleCount = 0;
+    posts.forEach((li) => {
+      const postTags = (li.dataset.tags ?? '').split(',');
+      const show = !tag || postTags.includes(tag);
+      li.style.display = show ? '' : 'none';
+      if (show) visibleCount++;
+    });
+
+    // Toggle empty state
+    if (noResults) {
+      noResults.classList.toggle('hidden', visibleCount > 0);
+    }
+
+    // Persist in URL
+    const url = new URL(window.location.href);
+    if (tag) {
+      url.searchParams.set('tag', tag);
+    } else {
+      url.searchParams.delete('tag');
+    }
+    history.replaceState(null, '', url.toString());
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tag = btn.dataset.tag!;
+      // Toggle off if already active
+      applyFilter(activeTag === tag ? null : tag);
+    });
+  });
+
+  // Restore filter from URL on load
+  const params = new URLSearchParams(window.location.search);
+  const urlTag = params.get('tag');
+  if (urlTag) {
+    applyFilter(urlTag);
+  }
+</script>
+</Layout>

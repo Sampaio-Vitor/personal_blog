@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import SiteShell from '../../../components/SiteShell.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+
+  return tags.map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter((p) => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Layout title={`#${tag}`} description={`Posts tagged #${tag} on vitorsampa.io.`}>
+  <SiteShell active="blog">
+    <header class="mb-10">
+      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">
+        <a href="/blog" class="hover:text-accent">blog.md</a> / tag
+      </p>
+      <h1 class="font-display font-extrabold text-5xl tracking-tight mb-2">#{tag}</h1>
+      <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
+        // {posts.length} post{posts.length === 1 ? '' : 's'}
+      </p>
+    </header>
+
+    <ul class="space-y-6">
+      {posts.map((post) => (
+        <li class="border-2 border-foreground bg-surface shadow-brutal p-5 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-brutal-sm transition-all">
+          <a href={`/blog/${post.slug}`} class="block">
+            <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">
+              {fmt(post.data.date)}
+              {post.data.tags.length > 0 && ' · ' + post.data.tags.map((t) => `#${t}`).join(' ')}
+            </p>
+            <h2 class="font-serif italic text-3xl mb-2 hover:text-accent">{post.data.title}</h2>
+            {post.data.description && (
+              <p class="font-sans text-base text-foreground-muted">{post.data.description}</p>
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <p class="mt-12 font-mono text-xs">
+      <a href="/blog" class="text-foreground-muted hover:text-accent">← all posts</a>
+    </p>
+  </SiteShell>
+</Layout>
