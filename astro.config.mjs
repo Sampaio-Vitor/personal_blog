@@ -6,10 +6,13 @@ import compress from 'astro-compress';
 import rehypeShiki from '@shikijs/rehype';
 import remarkEmoji from 'remark-emoji';
 
+import cloudflare from "@astrojs/cloudflare";
+
 export default defineConfig({
   site: 'https://vitorsampa.io',
   output: 'static',
   trailingSlash: 'never',
+
   integrations: [
     tailwind({ applyBaseStyles: false }),
     mdx(),
@@ -22,9 +25,12 @@ export default defineConfig({
       SVG: true,
     }),
   ],
+
   markdown: {
     remarkPlugins: [remarkEmoji],
     rehypePlugins: [[rehypeShiki, { theme: 'vitesse-dark' }]],
     syntaxHighlight: false,
   },
+
+  adapter: cloudflare()
 });
