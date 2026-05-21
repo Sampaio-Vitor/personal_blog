@@ -28,7 +28,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10);
       <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">
         <a href="/blog" class="hover:text-accent">blog.md</a> / tag
       </p>
-      <h1 class="font-display font-extrabold text-5xl tracking-tight mb-2">#{tag}</h1>
+      <h1 class="font-sans font-bold text-5xl tracking-tight mb-2">#{tag}</h1>
       <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
         // {posts.length} post{posts.length === 1 ? '' : 's'}
       </p>
@@ -42,7 +42,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10);
               {fmt(post.data.date)}
               {post.data.tags.length > 0 && ' · ' + post.data.tags.map((t) => `#${t}`).join(' ')}
             </p>
-            <h2 class="font-serif italic text-3xl mb-2 hover:text-accent">{post.data.title}</h2>
+            <h2 class="font-sans font-bold tracking-tight text-3xl mb-2 hover:text-accent">{post.data.title}</h2>
             {post.data.description && (
               <p class="font-sans text-base text-foreground-muted">{post.data.description}</p>
             )}

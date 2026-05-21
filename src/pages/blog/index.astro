@@ -14,7 +14,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10);
 <Layout title="blog" description="Writing from Vitor Sampaio.">
   <SiteShell active="blog">
     <header class="mb-10">
-      <h1 class="font-serif italic text-5xl mb-2">blog</h1>
+      <h1 class="font-sans font-bold tracking-tight text-5xl mb-2">blog</h1>
       <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted">
         // {posts.length} post{posts.length === 1 ? '' : 's'}
       </p>
@@ -51,7 +51,7 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10);
             <p class="font-mono text-xs uppercase tracking-wider text-foreground-muted mb-2">
               {fmt(post.data.date)}
             </p>
-            <h2 class="font-serif italic text-3xl mb-2 hover:text-accent">{post.data.title}</h2>
+            <h2 class="font-sans font-bold tracking-tight text-3xl mb-2 hover:text-accent">{post.data.title}</h2>
             {post.data.description && (
               <p class="font-sans text-base text-foreground-muted mb-3">{post.data.description}</p>
             )}
