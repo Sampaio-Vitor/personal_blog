@@ -5,6 +5,9 @@ dist/
 .env.production
 .DS_Store
 *.log
+.venv/
+olx/.venv/
+__pycache__/
 .vscode/
 .idea/
 
